@@ -63,13 +63,13 @@
              color: white;
         }
         #timer {
-             background-color: rgba(255, 255, 255, 0.2); 
+             background-color: rgba(255, 255, 255, 0.2);
              color: white;
              font-weight: bold;
-             padding: 0.25rem 0.75rem; 
-             border-radius: 0.25rem; 
+             padding: 0.25rem 0.75rem;
+             border-radius: 0.25rem;
         }
-        
+
         /* Buttons in secondary toolbar */
         .secondary-toolbar-button {
             background-color: transparent;
@@ -104,14 +104,14 @@
         .footer-bar button {
             background-color: transparent;
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.5); 
-            padding: 0.4rem 0.8rem; 
-            font-size: 0.8rem; 
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
             border-radius: 0.375rem;
              transition: background-color 0.2s ease, border-color 0.2s ease;
         }
         .footer-bar button:hover:not(:disabled) {
-            background-color: rgba(255, 255, 255, 0.15); 
+            background-color: rgba(255, 255, 255, 0.15);
             border-color: white;
         }
          .footer-bar button:disabled {
@@ -120,60 +120,60 @@
              border-color: rgba(255, 255, 255, 0.3);
          }
          .footer-bar button#next-button {
-             background-color: #ffffff; 
-             color: #006DAA; 
+             background-color: #ffffff;
+             color: #006DAA;
              border: 1px solid white;
              font-weight: 500;
          }
          .footer-bar button#next-button:hover:not(:disabled) {
-             background-color: #f0f0f0; 
+             background-color: #f0f0f0;
          }
          #flag-button.flagged {
-             background-color: #facc15; 
+             background-color: #facc15;
              border-color: #facc15;
-             color: #422006; 
+             color: #422006;
           }
           #flag-button.flagged:hover {
-             background-color: #f59e0b; 
+             background-color: #f59e0b;
              border-color: #f59e0b;
           }
 
         /* Main Content Area */
         .main-content-area {
-            flex-grow: 1; 
+            flex-grow: 1;
             display: flex;
-            overflow: hidden; 
-            padding: 1rem; 
-            gap: 1rem; 
+            overflow: hidden;
+            padding: 1rem;
+            gap: 1rem;
         }
         .passage-column {
-            flex: 0 0 60%; 
-            overflow-y: auto; 
+            flex: 0 0 60%;
+            overflow-y: auto;
             padding: 1rem;
             border: 1px solid #e5e7eb;
             border-radius: 0.375rem;
             background-color: #fff;
-            height: 100%; 
+            height: 100%;
         }
         .question-column {
-             flex: 0 0 40%; 
-             overflow-y: auto; 
+             flex: 0 0 40%;
+             overflow-y: auto;
              padding: 1rem;
              border: 1px solid #e5e7eb;
              border-radius: 0.375rem;
              background-color: #fff;
-             height: 100%; 
-             position: relative; 
+             height: 100%;
+             position: relative;
         }
 
         .selected-answer {
-            background-color: #bfdbfe !important; 
-            border-color: #3b82f6 !important; 
+            background-color: #bfdbfe !important;
+            border-color: #3b82f6 !important;
         }
         .nav-answered { background-color: #a7f3d0; }
         .nav-current { border: 2px solid #3b82f6 !important; font-weight: bold; }
         .nav-flagged, .review-flagged { border: 2px solid #f59e0b !important; position: relative; }
-        
+
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
         .modal-content { background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 0.5rem; }
         .modal.flex { display: flex; }
@@ -192,18 +192,18 @@
         .secondary-button:hover:not(:disabled) { background-color: #f9fafb; }
         .danger-button { background-color: #ef4444; color: white; border: 1px solid transparent; }
         .danger-button:hover:not(:disabled) { background-color: #dc2626; }
-        
+
         .option-label {
-            display: block; padding: 0.75rem 1rem; border: 1px solid #d1d5db; 
+            display: block; padding: 0.75rem 1rem; border: 1px solid #d1d5db;
             border-radius: 0.375rem; margin-bottom: 0.5rem; cursor: pointer;
             transition: background-color 0.2s ease, border-color 0.2s ease;
-            background-color: #ffffff; 
+            background-color: #ffffff;
         }
         .option-label:hover:not(.selected-answer) { background-color: #f3f4f6; border-color: #a5b4fc; }
         input[type="radio"] { display: none; }
 
         #results-details-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
             gap: 1rem; padding-top: 0.5rem; max-width: 500px; margin-left: auto; margin-right: auto;
         }
         .result-summary-item { display: flex; flex-direction: column; align-items: center; text-align: center; }
@@ -218,10 +218,10 @@
         .not-answered-box { background-color: #9ca3af; border: 2px solid #6b7280; }
         .time-display-in-box { font-size: 1rem; }
         .question-number-label { margin-top: 0.5rem; font-size: 0.875rem; color: #4b5563; font-weight: 500; }
-        
+
         .explanation-box {
-             background-color: #fef3c7; border: 1px solid #fcd34d; padding: 0.5rem 0.75rem; 
-             margin-top: 0.75rem; border-radius: 0.375rem; font-size: 0.875rem; color: #78350f; 
+             background-color: #fef3c7; border: 1px solid #fcd34d; padding: 0.5rem 0.75rem;
+             margin-top: 0.75rem; border-radius: 0.375rem; font-size: 0.875rem; color: #78350f;
         }
         .review-grid-button {
              padding: 0.5rem 0.25rem; border: 1px solid #d1d5db; border-radius: 0.375rem;
@@ -234,9 +234,9 @@
 
         /* Calculator Styles */
         #calculator-ui {
-            display: none; 
+            display: none;
             position: absolute;
-            top: 100px; 
+            top: 100px;
             left: 50%;
             width: 225px;
             background-color: #0077b6; /* Bright blue background matching image */
@@ -244,26 +244,26 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             padding: 12px;
-            z-index: 1000; 
+            z-index: 1000;
             cursor: grab;
             transform: translateX(-50%); /* Center horizontally */
         }
         #calculator-ui.visible { display: block; }
         .calculator-header {
-            display: flex; 
-            justify-content: space-between; 
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            color: white; 
-            margin-bottom: 8px; 
-            font-size: 0.9rem; 
+            color: white;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
             padding: 0 3px;
         }
         .calculator-header .title { font-weight: 600; }
         .calculator-header .close-calc-btn {
-            background: none; 
-            border: none; 
-            color: white; 
-            font-size: 1.1rem; 
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
             cursor: pointer;
             font-weight: bold;
         }
@@ -277,23 +277,23 @@
 
         #calc-display-container {
             background-color: #FFFFFF;
-            border: 1px solid #cccccc; 
-            border-radius: 4px; 
+            border: 1px solid #cccccc;
+            border-radius: 4px;
             padding: 8px 12px;
-            margin-bottom: 12px; 
-            text-align: right; 
+            margin-bottom: 12px;
+            text-align: right;
             min-height: 36px;
-            display: flex; 
-            align-items: center; 
+            display: flex;
+            align-items: center;
             justify-content: flex-end;
         }
         #calc-display {
-            font-family: 'Courier New', Courier, monospace; 
+            font-family: 'Courier New', Courier, monospace;
             font-size: 1.6rem;
-            color: #000000; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            white-space: nowrap; 
+            color: #000000;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             max-width: 100%;
         }
         .calc-buttons-grid {
@@ -306,11 +306,11 @@
             border-radius: 4px;
             padding: 10px 0;
             font-size: 1rem;
-            font-weight: 500; 
+            font-weight: 500;
             cursor: pointer;
             transition: background-color 0.2s ease, transform 0.1s ease;
-            display: flex; 
-            align-items: center; 
+            display: flex;
+            align-items: center;
             justify-content: center;
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
@@ -329,7 +329,7 @@
             color: white;
         }
         .calc-button-red:hover { background-color: #e63946; }
-        
+
         .calc-button.equals {
             grid-row: span 1; /* Only span 1 row */
             grid-column: 4; /* Position in 4th column */
@@ -345,17 +345,17 @@
             .header-bar span, .footer-bar button, .secondary-toolbar-button { font-size: 0.8rem; }
             button, .button { padding: 0.4rem 0.8rem; }
             .footer-bar button { padding: 0.3rem 0.6rem; font-size: 0.75rem; }
-            #review-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } 
+            #review-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
             .review-grid-button { font-size: 0.8rem; }
             #results-details-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.75rem; }
             .result-summary-box { width: 60px; height: 60px; }
             .time-display-in-box { font-size: 0.9rem; }
-            #calculator-ui { width: 210px; top: 90px; padding: 10px;} 
+            #calculator-ui { width: 210px; top: 90px; padding: 10px;}
             .calc-button { padding: 8px 0; font-size: 0.8rem;}
             #calc-display { font-size: 1.4rem; }
         }
          @media (max-width: 480px) {
-             #review-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } 
+             #review-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
              .header-bar span, .footer-bar button, .secondary-toolbar-button { font-size: 0.75rem; }
              button, .button { padding: 0.3rem 0.6rem; }
              .footer-bar button { padding: 0.25rem 0.5rem; font-size: 0.7rem; }
@@ -365,7 +365,7 @@
              .result-summary-box { width: 50px; height: 50px; }
              .time-display-in-box { font-size: 0.8rem; }
              .question-number-label { font-size: 0.8rem; }
-             #calculator-ui { width: 90%; max-width: 200px; top: 85px; padding: 8px; } 
+             #calculator-ui { width: 90%; max-width: 200px; top: 85px; padding: 8px; }
              .calc-button { padding: 7px 0; font-size: 0.75rem;}
              #calc-display { font-size: 1.3rem; }
          }
@@ -403,6 +403,9 @@
             </div>
             <div class="mt-8 text-center">
                 <button id="start-button" class="primary-button text-lg px-8 py-3">Begin timed set</button>
+            </div>
+             <div class="mt-4 text-center">
+                 <a href="student_dashboard.html" class="secondary-button inline-block px-6 py-2">← Back to Dashboard</a>
             </div>
         </div>
 
@@ -444,7 +447,7 @@
                  </div>
             </div>
         </div>
-        
+
         <div id="calculator-ui">
             <div class="calculator-header" id="calculator-drag-header">
                 <span class="title">Calculator</span>
@@ -460,7 +463,7 @@
                 <button class="calc-button calc-button-red" data-calc-action="sqrt">√</button>
                 <button class="calc-button calc-button-red" data-calc-action="percent">%</button>
                 <button class="calc-button calc-button-red operator" data-calc-value="/">÷</button>
-                
+
                 <button class="calc-button calc-button-red" data-calc-action="mrc">MRC</button>
                 <button class="calc-button calc-button-red" data-calc-action="m-">M-</button>
                 <button class="calc-button calc-button-red" data-calc-action="m+">M+</button>
@@ -475,7 +478,7 @@
                 <button class="calc-button calc-button-num" data-calc-value="5">5</button>
                 <button class="calc-button calc-button-num" data-calc-value="6">6</button>
                 <button class="calc-button calc-button-red operator" data-calc-value="+">+</button>
-                
+
                 <button class="calc-button calc-button-num" data-calc-value="1">1</button>
                 <button class="calc-button calc-button-num" data-calc-value="2">2</button>
                 <button class="calc-button calc-button-num" data-calc-value="3">3</button>
@@ -527,6 +530,9 @@
                 <button onclick="window.location.reload()" class="secondary-button px-6 py-2">Try Again</button>
                 <button id="download-pdf-button" class="primary-button px-6 py-2">Download Results PDF</button>
             </div>
+             <div class="mt-4 text-center flex-shrink-0">
+                 <a href="student_dashboard.html" class="secondary-button inline-block px-6 py-2">← Back to Dashboard</a>
+            </div>
         </div>
 
         <div id="navigator-modal" class="modal">
@@ -560,7 +566,7 @@
         let currentQuestionIndex = 0;
         let userAnswers = new Array(questions.length).fill(null);
         let timerInterval;
-        let timeLeft = 4 * 60; 
+        let timeLeft = 4 * 60;
         let practiceSessionStartTime; let practiceSessionEndTime;
         let userName = ''; let userGoal = ''; let userFocusArea = '';
         let isReviewingFromResults = false;
@@ -575,8 +581,8 @@
         let calcPreviousInput = '';
         let calcOperator = null;
         let calcMemory = 0;
-        let calcShouldResetDisplay = false; 
-        let calcMrcPressedOnce = false; 
+        let calcShouldResetDisplay = false;
+        let calcMrcPressedOnce = false;
         let isDraggingCalculator = false;
         let calculatorOffsetX, calculatorOffsetY;
 
@@ -813,7 +819,7 @@
             if (calculatorUI.classList.contains('visible')) {
                 toggleCalculator();
             }
-            
+
             if (isReviewingFromResults) {
                 if (currentQuestionIndex < questions.length - 1) {
                     loadQuestion(currentQuestionIndex + 1, true);
@@ -834,7 +840,7 @@
             if (calculatorUI.classList.contains('visible')) {
                 toggleCalculator();
             }
-            
+
              if (isReviewingFromResults) {
                  if (currentQuestionIndex > 0) {
                      loadQuestion(currentQuestionIndex - 1, true);
@@ -979,7 +985,7 @@
             appContainer.classList.add('flex', 'flex-col');
 
             let score = 0;
-            resultsDetailsGrid.innerHTML = ''; 
+            resultsDetailsGrid.innerHTML = '';
 
             questions.forEach((qData, index) => {
                 const userAnswer = userAnswers[index];
@@ -1089,7 +1095,7 @@
                 const status = userAnswer === null || userAnswer === undefined ? "Not Answered" : (isCorrect ? "Correct" : "Incorrect");
                 const timeSpentSec = Math.round((questionTimes[index] || 0) / 1000);
                 const resultText = `Q${index + 1}: Your Ans: ${userAnswer || 'N/A'}, Correct: ${correctAnswer}, Status: ${status}, Time: ${timeSpentSec}s`;
-                
+
                 let textLines = doc.splitTextToSize(resultText, doc.internal.pageSize.width - margin * 2);
                 if (y + (textLines.length * (lineHeight * 0.7)) > pageHeight - margin) {
                     doc.addPage();
@@ -1100,7 +1106,7 @@
             });
             doc.save(`ucat_qr_results_${userName || 'user'}.pdf`);
         }
-        
+
         // --- Calculator Functions ---
         function updateCalcDisplay() {
             // Ensure display doesn't overflow, show 'Error' if too long (simple approach)
@@ -1123,10 +1129,10 @@
             calcPreviousInput = '';
             calcOperator = null;
             calcShouldResetDisplay = false;
-            calcMrcPressedOnce = false; 
+            calcMrcPressedOnce = false;
             updateCalcDisplay();
         }
-        
+
         function inputDigit(digit) {
             if (calcCurrentInput === 'Error') calcCurrentInput = '0'; // Clear error on new digit
             if (calcShouldResetDisplay) {
@@ -1140,7 +1146,7 @@
                 calcCurrentInput = calcCurrentInput === '0' ? digit : calcCurrentInput + digit;
             }
             updateCalcDisplay();
-            calcMrcPressedOnce = false; 
+            calcMrcPressedOnce = false;
         }
 
         function inputDecimal() {
@@ -1158,10 +1164,10 @@
         function handleOperator(nextOperator) {
             if (calcCurrentInput === 'Error') return;
             const inputValue = parseFloat(calcCurrentInput);
-            if (calcOperator && !calcShouldResetDisplay) { 
+            if (calcOperator && !calcShouldResetDisplay) {
                 calculate();
                 if (calcCurrentInput === 'Error') return; // Stop if calculation resulted in error
-                calcPreviousInput = calcCurrentInput; 
+                calcPreviousInput = calcCurrentInput;
             } else {
                 calcPreviousInput = calcCurrentInput;
             }
@@ -1185,7 +1191,7 @@
                 case '+': result = prev + current; break;
                 case '-': result = prev - current; break;
                 case '*': result = prev * current; break;
-                case '/': 
+                case '/':
                     if (current === 0) {
                         result = 'Error';
                     } else {
@@ -1207,7 +1213,7 @@
                 calcCurrentInput = resultStr;
             }
             calcOperator = null;
-            calcShouldResetDisplay = true; 
+            calcShouldResetDisplay = true;
             updateCalcDisplay();
         }
 
@@ -1225,20 +1231,20 @@
                     updateCalcDisplay();
                     break;
                 case 'mrc':
-                    if (calcMrcPressedOnce) { 
+                    if (calcMrcPressedOnce) {
                         calcMemory = 0;
                         calcMrcPressedOnce = false;
                         // Optionally, could also clear display to 0 here
-                    } else { 
+                    } else {
                         calcCurrentInput = String(parseFloat(calcMemory.toPrecision(10))); // Show memory with precision
                         calcMrcPressedOnce = true;
-                        calcShouldResetDisplay = true; 
+                        calcShouldResetDisplay = true;
                     }
                     break;
             }
             if (action !== 'mrc') { // For M+ and M-, display doesn't change immediately
                 calcShouldResetDisplay = true; // Next number input should overwrite current display
-                calcMrcPressedOnce = false; 
+                calcMrcPressedOnce = false;
             } else {
                 updateCalcDisplay(); // For MRC, update display immediately
             }
@@ -1262,12 +1268,12 @@
                         const prev = parseFloat(calcPreviousInput);
                         if (isNaN(prev)) { calcCurrentInput = 'Error'; break; }
                         calcCurrentInput = String(parseFloat((prev * (currentValue / 100)).toPrecision(10)));
-                    } else { 
+                    } else {
                         calcCurrentInput = String(parseFloat((currentValue / 100).toPrecision(10)));
                     }
                     break;
                 case 'negate':
-                     if (calcCurrentInput !== '0' && !isNaN(currentValue)) { 
+                     if (calcCurrentInput !== '0' && !isNaN(currentValue)) {
                         calcCurrentInput = String(currentValue * -1);
                     }
                     break;
@@ -1283,7 +1289,7 @@
                     break;
             }
             updateCalcDisplay();
-            if (func !== 'backspace' && func !== 'negate') { 
+            if (func !== 'backspace' && func !== 'negate') {
                 calcShouldResetDisplay = true;
             }
             calcMrcPressedOnce = false;
@@ -1294,10 +1300,10 @@
             const isVisible = calculatorUI.classList.toggle('visible');
             calculatorToggleButton.classList.toggle('active', isVisible);
             if (isVisible) {
-                clearCalculator(); 
+                clearCalculator();
             }
         }
-        
+
         // Draggable Calculator Logic
         function makeDraggable(element, handle) {
             let currentX, currentY;
@@ -1332,7 +1338,7 @@
                 // Constrain within app-container (optional, can be complex)
                 const appRect = appContainer.getBoundingClientRect();
                 const calcRect = element.getBoundingClientRect();
-                
+
                 // Simple boundary check (relative to viewport for now, as appContainer might scroll)
                 // For more robust boundary, calculate relative to appContainer's scroll position
                 if (newLeft < 0) newLeft = 0;
@@ -1380,15 +1386,15 @@
         endPracticeSessionButton.addEventListener('click', endPracticeSessionAndShowResults);
         endPracticeSessionButtonFooter.addEventListener('click', handleEndPracticeSessionFooterClick);
         backToResultsButton.addEventListener('click', () => { isReviewingFromResults = false; showResultsScreen(); });
-        navigatorButton.addEventListener('click', () => { 
+        navigatorButton.addEventListener('click', () => {
             // Hide calculator if it's open
             if (calculatorUI.classList.contains('visible')) {
-                toggleCalculator(); 
+                toggleCalculator();
             }
-            recordTimeSpent(currentQuestionIndex); 
-            updateNavigatorButtons(); 
-            navigatorModal.classList.remove('hidden'); 
-            navigatorModal.classList.add('flex'); 
+            recordTimeSpent(currentQuestionIndex);
+            updateNavigatorButtons();
+            navigatorModal.classList.remove('hidden');
+            navigatorModal.classList.add('flex');
         });
         closeModalButton.addEventListener('click', () => { navigatorModal.classList.remove('flex'); navigatorModal.classList.add('hidden'); if (!isReviewingFromResults) questionStartTime = Date.now(); });
         navigatorModal.addEventListener('click', (event) => { if (event.target === navigatorModal) closeModalButton.click(); });
@@ -1406,14 +1412,14 @@
                 const value = button.dataset.calcValue;
                 const action = button.dataset.calcAction;
 
-                if (value !== undefined) { 
-                    if (value === '.') { inputDecimal(); } 
+                if (value !== undefined) {
+                    if (value === '.') { inputDecimal(); }
                     else { inputDigit(value); }
-                } else if (action) { 
-                    if (['+', '-', '*', '/'].includes(action)) { handleOperator(action); } 
-                    else if (action === 'equals') { calculate(); } 
-                    else if (action === 'clear') { clearCalculator(); } 
-                    else if (['m+', 'm-', 'mrc'].includes(action)) { handleMemory(action); } 
+                } else if (action) {
+                    if (['+', '-', '*', '/'].includes(action)) { handleOperator(action); }
+                    else if (action === 'equals') { calculate(); }
+                    else if (action === 'clear') { clearCalculator(); }
+                    else if (['m+', 'm-', 'mrc'].includes(action)) { handleMemory(action); }
                     else if (['sqrt', 'percent', 'negate', 'backspace'].includes(action)) { handleSpecialFunction(action); }
                 }
             });
@@ -1425,36 +1431,36 @@
              const isInputFocused = document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA');
              const isCalcVisible = calculatorUI.classList.contains('visible');
 
-             if (isCalcVisible && !isInputFocused) { 
+             if (isCalcVisible && !isInputFocused) {
                 if (e.key >= '0' && e.key <= '9') { e.preventDefault(); inputDigit(e.key); return; }
                 if (e.key === '.') { e.preventDefault(); inputDecimal(); return; }
                 if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') { e.preventDefault(); handleOperator(e.key); return; }
                 if (e.key === 'Enter' || e.key === '=') { e.preventDefault(); calculate(); return; }
                 if (e.key === 'Backspace') { e.preventDefault(); handleSpecialFunction('backspace'); return; }
-                if (e.key === 'Escape') { e.preventDefault(); toggleCalculator(); return; } 
+                if (e.key === 'Escape') { e.preventDefault(); toggleCalculator(); return; }
                 if (e.key.toLowerCase() === 'p') { e.preventDefault(); handleMemory('m+'); return; }
                 if (e.key.toLowerCase() === 'm') { e.preventDefault(); handleMemory('m-'); return; }
-                if (e.key.toLowerCase() === 'c' && !e.altKey && !e.metaKey && !e.ctrlKey) { e.preventDefault(); handleMemory('mrc'); return; } 
+                if (e.key.toLowerCase() === 'c' && !e.altKey && !e.metaKey && !e.ctrlKey) { e.preventDefault(); handleMemory('mrc'); return; }
                 if (e.key.toLowerCase() === 'x') { e.preventDefault(); handleSpecialFunction('sqrt'); return; }
              }
-             
-             if (isModalVisible || isInputFocused) return; 
-             if (!isPracticeSessionVisible) return; 
-             
+
+             if (isModalVisible || isInputFocused) return;
+             if (!isPracticeSessionVisible) return;
+
              const key = e.key.toLowerCase();
-             const altOrOption = e.altKey || e.metaKey; 
-             const code = e.code.toLowerCase(); 
+             const altOrOption = e.altKey || e.metaKey;
+             const code = e.code.toLowerCase();
 
              if (altOrOption) {
-                 switch (code) { 
+                 switch (code) {
                      case 'keyn': e.preventDefault(); if (!nextButton.disabled) nextButton.click(); return;
                      case 'keyp': e.preventDefault(); if (!prevButton.disabled) prevButton.click(); return;
                      case 'keyf': e.preventDefault(); if (!isReviewingFromResults && !flagButton.disabled) flagButton.click(); return;
-                     case 'keyc': e.preventDefault(); toggleCalculator(); return; 
-                     default: return; 
+                     case 'keyc': e.preventDefault(); toggleCalculator(); return;
+                     default: return;
                  }
-             } else { 
-                 if (['a', 'b', 'c', 'd', 'e'].includes(key) && !isReviewingFromResults && !isCalcVisible) { 
+             } else {
+                 if (['a', 'b', 'c', 'd', 'e'].includes(key) && !isReviewingFromResults && !isCalcVisible) {
                      e.preventDefault();
                      const optionIndex = ['a', 'b', 'c', 'd', 'e'].indexOf(key);
                      const optionValue = ['A', 'B', 'C', 'D', 'E'][optionIndex];
@@ -1470,7 +1476,7 @@
 
         // --- Initial Load ---
         showSetupScreen();
-        updateCalcDisplay(); 
+        updateCalcDisplay();
 
         // Update the review grid button click handler to not restart the timer
         reviewGrid.addEventListener('click', (e) => {
