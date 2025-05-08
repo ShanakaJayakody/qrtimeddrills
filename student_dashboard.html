@@ -84,5 +84,40 @@
 
     </div>
 
+    <script>
+        const nameSpan = document.getElementById('student-name-editable');
+        const localStorageKey = 'qrStudentName';
+
+        // Load name from local storage on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedName = localStorage.getItem(localStorageKey);
+            if (savedName && savedName.trim() !== '') {
+                nameSpan.textContent = savedName;
+            } else {
+                nameSpan.textContent = 'Your Name'; // Default if nothing saved or empty
+            }
+        });
+
+        // Save name to local storage when the span loses focus
+        nameSpan.addEventListener('blur', () => {
+            const currentName = nameSpan.textContent.trim();
+            if (currentName !== '') {
+                localStorage.setItem(localStorageKey, currentName);
+            } else {
+                // Optionally handle case where user clears the name
+                localStorage.removeItem(localStorageKey); // Or set back to default
+                nameSpan.textContent = 'Your Name'; 
+            }
+        });
+
+        // Optional: Prevent line breaks if user presses Enter
+        nameSpan.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent adding a new line
+                nameSpan.blur(); // Trigger the blur event to save
+            }
+        });
+    </script>
+
 </body>
 </html>
