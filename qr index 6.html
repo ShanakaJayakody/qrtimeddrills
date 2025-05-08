@@ -402,6 +402,9 @@
             <div class="mt-8 text-center">
                 <button id="start-button" class="primary-button text-lg px-8 py-3">Begin timed set</button>
             </div>
+            <div class="mt-4 text-center"> <!-- Added this div for the new button -->
+                <button onclick="window.location.href='student_dashboard.html'" class="secondary-button text-md px-6 py-2">Return to Dashboard</button>
+            </div>
         </div>
 
         <div id="exam-screen" class="hidden flex flex-col h-full">
@@ -522,6 +525,7 @@
                  </div>
             </div>
               <div class="mt-6 text-center flex-shrink-0 flex justify-center space-x-4">
+                <button onclick="window.location.href='student_dashboard.html'" class="secondary-button px-6 py-2">Return to Dashboard</button> <!-- Added this button -->
                 <button onclick="window.location.reload()" class="secondary-button px-6 py-2">Try Again</button>
                 <button id="download-pdf-button" class="primary-button px-6 py-2">Download Results PDF</button>
             </div>
