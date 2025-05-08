@@ -23,7 +23,7 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 2rem; /* Increased padding */
             width: 100%;
-            max-width: 600px; /* Max width for better readability */
+            max-width: 800px; /* Increased max-width for new sections */
             text-align: center; /* Center align content */
         }
         /* Style for the drill links */
@@ -52,6 +52,48 @@
             max-width: 150px; /* Adjust size as needed */
             margin: 0 auto 1.5rem auto; /* Center and add space below */
         }
+
+        /* Styles for the new sections */
+        .dashboard-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        .dashboard-section h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 1.5rem;
+        }
+
+         .performance-item {
+             background-color: #f9fafb;
+             border: 1px solid #e5e7eb;
+             border-radius: 0.375rem;
+             padding: 0.75rem;
+             margin-bottom: 0.5rem;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             font-size: 1rem;
+         }
+
+         .reflection-item {
+             background-color: #f9fafb;
+             border: 1px solid #e5e7eb;
+             border-radius: 0.375rem;
+             padding: 1rem;
+             margin-bottom: 0.75rem;
+         }
+
+         .reflection-item strong {
+             display: block;
+             margin-bottom: 0.5rem;
+             color: #2d3748;
+         }
     </style>
      <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,6 +105,12 @@
          <img src="https://placehold.co/150x50/cccccc/ffffff?text=Your+Logo" alt="Logo Placeholder" class="logo" onerror="this.style.display='none'; this.onerror=null;">
 
         <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Quantitative Reasoning Drills</h1>
+
+        <div class="mb-6 text-left">
+            <label for="student-name" class="block text-lg font-semibold text-gray-700 mb-2">Student Name:</label>
+            <input type="text" id="student-name" name="student-name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-base" placeholder="Enter your name">
+        </div>
+
 
         <div class="space-y-3">
             <a href="qr index 1.html" class="drill-link">Timed QR Drill 1</a>
@@ -77,8 +125,134 @@
 
              <a href="qr index 6.html" class="drill-link">Timed QR Drill 6</a>
 
-            </div>
-    </div>
+        </div>
 
+        <div id="overall-performance-section" class="dashboard-section">
+            <h2>Overall Performance</h2>
+            <div id="performance-list">
+                <div class="performance-item">
+                    <span>Timed QR Drill 1:</span>
+                    <span>Score: - / - Time: -</span>
+                </div>
+                 <div class="performance-item">
+                    <span>Timed QR Drill 2:</span>
+                    <span>Score: - / - Time: -</span>
+                </div>
+                <div class="performance-item">
+                    <span>Timed QR Drill 6:</span>
+                    <span>Score: - / - Time: -</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="personal-reflections-section" class="dashboard-section">
+             <h2>Personal Reflections</h2>
+             <div id="reflections-list">
+                 <div class="reflection-item">
+                     <strong>Timed QR Drill 1 Reflection:</strong>
+                     <p>No reflection recorded yet.</p>
+                      <strong>Focus Rating:</strong>
+                      <p>N/A</p>
+                 </div>
+                  <div class="reflection-item">
+                     <strong>Timed QR Drill 2 Reflection:</strong>
+                     <p>No reflection recorded yet.</p>
+                      <strong>Focus Rating:</strong>
+                      <p>N/A</p>
+                 </div>
+                 <div class="reflection-item">
+                     <strong>Timed QR Drill 6 Reflection:</strong>
+                     <p>No reflection recorded yet.</p>
+                      <strong>Focus Rating:</strong>
+                      <p>N/A</p>
+                 </div>
+             </div>
+         </div>
+
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const studentNameInput = document.getElementById('student-name');
+            const performanceList = document.getElementById('performance-list');
+            const reflectionsList = document.getElementById('reflections-list');
+
+            // --- Student Name Logic ---
+
+            // Load name from localStorage when the page loads
+            const savedName = localStorage.getItem('studentName');
+            if (savedName) {
+                studentNameInput.value = savedName;
+            }
+
+            // Save name to localStorage whenever the input changes
+            studentNameInput.addEventListener('input', (event) => {
+                localStorage.setItem('studentName', event.target.value);
+            });
+
+            // --- Load and Display Drill Results and Reflections ---
+
+            // Define the list of drills and the localStorage keys for their data
+            // Ensure these keys match exactly what your qr index files use to save data.
+            const drills = [
+                { name: 'Timed QR Drill 1', resultsKey: 'qrDrill1Results', reflectionKey: 'qrDrill1Reflection', focusKey: 'qrDrill1FocusRating' },
+                { name: 'Timed QR Drill 2', resultsKey: 'qrDrill2Results', reflectionKey: 'qrDrill2Reflection', focusKey: 'qrDrill2FocusRating' },
+                { name: 'Timed QR Drill 3', resultsKey: 'qrDrill3Results', reflectionKey: 'qrDrill3Reflection', focusKey: 'qrDrill3FocusRating' },
+                { name: 'Timed QR Drill 4', resultsKey: 'qrDrill4Results', reflectionKey: 'qrDrill4Reflection', focusKey: 'qrDrill4FocusRating' },
+                { name: 'Timed QR Drill 5', resultsKey: 'qrDrill5Results', reflectionKey: 'qrDrill5Reflection', focusKey: 'qrDrill5FocusRating' },
+                { name: 'Timed QR Drill 6', resultsKey: 'qrDrill6Results', reflectionKey: 'qrDrill6Reflection', focusKey: 'qrDrill6FocusRating' },
+                // Add more drills here following the same pattern
+            ];
+
+            // Clear initial placeholder content
+            performanceList.innerHTML = '';
+            reflectionsList.innerHTML = '';
+
+            drills.forEach(drill => {
+                // --- Performance Display ---
+                const resultsData = localStorage.getItem(drill.resultsKey);
+                const performanceItem = document.createElement('div');
+                performanceItem.classList.add('performance-item');
+
+                if (resultsData) {
+                    try {
+                        const results = JSON.parse(resultsData);
+                        // Assuming results object has score, totalQuestions, and timeTaken (string like "X min YY sec")
+                        performanceItem.innerHTML = `
+                            <span>${drill.name}:</span>
+                            <span>Score: ${results.score} / ${results.totalQuestions} Time: ${results.timeTaken}</span>
+                        `;
+                    } catch (e) {
+                        console.error(`Error parsing results for ${drill.name}:`, e);
+                        performanceItem.innerHTML = `
+                            <span>${drill.name}:</span>
+                            <span>Error loading data</span>
+                        `;
+                    }
+                } else {
+                    performanceItem.innerHTML = `
+                        <span>${drill.name}:</span>
+                        <span>Not completed yet</span>
+                    `;
+                }
+                performanceList.appendChild(performanceItem);
+
+                // --- Reflections Display ---
+                const reflectionTextData = localStorage.getItem(drill.reflectionKey);
+                const focusRatingData = localStorage.getItem(drill.focusKey);
+
+                const reflectionItem = document.createElement('div');
+                reflectionItem.classList.add('reflection-item');
+
+                reflectionItem.innerHTML = `
+                    <strong>${drill.name} Reflection:</strong>
+                    <p>${reflectionTextData || 'No reflection recorded yet.'}</p>
+                    <strong>Focus Rating:</strong>
+                    <p>${focusRatingData || 'N/A'}</p>
+                `;
+                 reflectionsList.appendChild(reflectionItem);
+
+            });
+        });
+    </script>
 </body>
 </html>
