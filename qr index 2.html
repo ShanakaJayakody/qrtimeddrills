@@ -569,7 +569,7 @@
         let currentQuestionIndex = 0;
         let userAnswers = new Array(questions.length).fill(null);
         let timerInterval;
-        let timeLeft = 4 * 60; 
+        let timeLeft = 4 * 60;
         let examStartTime; let examEndTime;
         let userName = ''; let userGoal = ''; let userFocusArea = '';
         let isReviewingFromResults = false;
@@ -584,8 +584,8 @@
         let calcPreviousInput = '';
         let calcOperator = null;
         let calcMemory = 0;
-        let calcShouldResetDisplay = false; 
-        let calcMrcPressedOnce = false; 
+        let calcShouldResetDisplay = false;
+        let calcMrcPressedOnce = false;
         let isDraggingCalculator = false;
         let calculatorOffsetX, calculatorOffsetY;
 
@@ -708,12 +708,13 @@
             const newPassageIndex = question.passageIndex;
             const passageContainer = document.querySelector('.passage-column');
             const questionContainer = document.querySelector('.question-column');
-            
-            passageTextEl.innerHTML = passages[newPassageIndex]; 
-            passageNumberEl.textContent = ''; 
+
+            passageTextEl.innerHTML = passages[newPassageIndex];
+            document.querySelector('.passage-column h3').innerHTML = `<span id="passage-number" class="sr-only">${newPassageIndex + 1}</span>`;
+
             currentlyDisplayedPassageIndex = newPassageIndex;
             if(passageContainer) passageContainer.scrollTop = 0;
-            
+
             currentQuestionIndex = index;
             isReviewingFromResults = reviewMode;
             questionNumberEl.textContent = index + 1;
@@ -823,7 +824,8 @@
             if (calculatorUI.classList.contains('visible')) {
                 toggleCalculator();
             }
-             if (isReviewingFromResults) {
+
+            if (isReviewingFromResults) {
                 if (currentQuestionIndex < questions.length - 1) {
                     loadQuestion(currentQuestionIndex + 1, true);
                 }
@@ -831,7 +833,6 @@
             else if (!isReviewingFromResults) {
                  recordTimeSpent(currentQuestionIndex);
                  if (currentQuestionIndex === questions.length - 1) {
-                     // Don't stop the timer when showing review screen
                      showReviewScreen();
                  } else if (currentQuestionIndex < questions.length - 1) {
                      loadQuestion(currentQuestionIndex + 1);
@@ -844,7 +845,7 @@
             if (calculatorUI.classList.contains('visible')) {
                 toggleCalculator();
             }
-            
+
              if (isReviewingFromResults) {
                  if (currentQuestionIndex > 0) {
                      loadQuestion(currentQuestionIndex - 1, true);
@@ -883,6 +884,8 @@
         }
 
         function showReviewScreen(filterFlagged = false) {
+            recordTimeSpent(currentQuestionIndex);
+            // Remove stopTimer() call to keep timer running when going to review screen
             examScreen.classList.add('hidden');
             reviewScreen.classList.remove('hidden');
             reviewScreen.classList.add('flex');
@@ -890,7 +893,6 @@
             resultsScreen.classList.remove('flex');
             setupScreen.classList.add('hidden');
             appContainer.classList.add('flex', 'flex-col');
-            
             reviewGrid.innerHTML = '';
             questions.forEach((_, index) => {
                  if (filterFlagged && !flaggedQuestions[index]) {
@@ -968,10 +970,88 @@
              });
          }
 
+         // --- Function to save drill results to localStorage ---
+        function saveDrillResults(drillKey) {
+            const score = scoreEl.textContent; // Get the score from the results element
+            const totalQuestions = totalQuestionsResultsEl.textContent; // Get total questions
+            const timeTaken = timeTakenEl.textContent; // Get time taken string
+
+            const resultsData = {
+                score: parseInt(score, 10), // Save as number
+                totalQuestions: parseInt(totalQuestions, 10), // Save as number
+                timeTaken: timeTaken // Save time as string
+            };
+
+            // Save results data to localStorage using the unique drillKey
+            localStorage.setItem(drillKey, JSON.stringify(resultsData));
+
+            console.log(`Results for ${drillKey} Saved:`, resultsData);
+        }
+
+
         function showResultsScreen() {
             examEndTime = examEndTime || new Date();
             recordTimeSpent(currentQuestionIndex);
             stopTimer();
+
+            // Calculate final score and update elements
+            let score = 0;
+             questions.forEach((qData, index) => {
+                 const userAnswer = userAnswers[index];
+                 const correctAnswer = qData.correctAnswer;
+                 const isCorrect = userAnswer !== null && userAnswer !== undefined && userAnswer === correctAnswer;
+                 if (isCorrect) score++;
+             });
+             scoreEl.textContent = score;
+             totalQuestionsResultsEl.textContent = questions.length;
+             const timeDiff = examEndTime - examStartTime;
+             timeTakenEl.textContent = formatTimeDifference(timeDiff);
+
+
+            // --- CALL THE SAVE FUNCTION HERE FOR DRILL 1 ---
+            saveDrillResults('qrDrill1Results');
+            // --------------------------------------------------
+
+            // Update the detailed results grid display
+             resultsDetailsGrid.innerHTML = '';
+             questions.forEach((qData, index) => {
+                 const userAnswer = userAnswers[index];
+                 const correctAnswer = qData.correctAnswer;
+                 const isCorrect = userAnswer !== null && userAnswer !== undefined && userAnswer === correctAnswer;
+                 const timeSpentMs = questionTimes[index] || 0;
+                 const timeSpentSec = Math.round(timeSpentMs / 1000);
+
+                 const summaryItem = document.createElement('div');
+                 summaryItem.classList.add('result-summary-item');
+
+                 const summaryBox = document.createElement('div');
+                 summaryBox.classList.add('result-summary-box');
+                 if (userAnswer === null || userAnswer === undefined) {
+                     summaryBox.classList.add('not-answered-box');
+                 } else {
+                     summaryBox.classList.add(isCorrect ? 'correct-box' : 'incorrect-box');
+                 }
+                 summaryBox.dataset.index = index;
+                 summaryBox.title = `Click to review Question ${index + 1}`;
+
+                 const timeDisplay = document.createElement('span');
+                 timeDisplay.classList.add('time-display-in-box');
+                 timeDisplay.textContent = `${timeSpentSec}s`;
+                 summaryBox.appendChild(timeDisplay);
+
+                 const numberLabel = document.createElement('div');
+                 numberLabel.classList.add('question-number-label');
+                 numberLabel.textContent = `Q${index + 1}`;
+
+                 summaryBox.addEventListener('click', () => {
+                     revisitQuestionFromResults(index);
+                 });
+
+                 summaryItem.appendChild(summaryBox);
+                 summaryItem.appendChild(numberLabel);
+                 resultsDetailsGrid.appendChild(summaryItem);
+             });
+
 
             examScreen.classList.add('hidden');
             reviewScreen.classList.add('hidden');
@@ -981,61 +1061,20 @@
             setupScreen.classList.add('hidden');
             appContainer.classList.add('flex', 'flex-col');
 
-            let score = 0;
-            resultsDetailsGrid.innerHTML = ''; 
+            // Pre-fill reflection and focus rating fields on the results screen if saved (optional, but helpful)
+             const savedReflection = localStorage.getItem('qrDrill1Reflection');
+             const savedFocus = localStorage.getItem('qrDrill1FocusRating');
+             if (reflectionText && savedReflection !== null) reflectionText.value = savedReflection;
+             if (focusRatingInput && savedFocus !== null) focusRatingInput.value = savedFocus;
 
-            questions.forEach((qData, index) => {
-                const userAnswer = userAnswers[index];
-                const correctAnswer = qData.correctAnswer;
-                const isCorrect = userAnswer !== null && userAnswer !== undefined && userAnswer === correctAnswer;
-                if (isCorrect) score++;
-
-                const timeSpentMs = questionTimes[index] || 0;
-                const timeSpentSec = Math.round(timeSpentMs / 1000);
-
-                const summaryItem = document.createElement('div');
-                summaryItem.classList.add('result-summary-item');
-
-                const summaryBox = document.createElement('div');
-                summaryBox.classList.add('result-summary-box');
-                if (userAnswer === null || userAnswer === undefined) {
-                    summaryBox.classList.add('not-answered-box');
-                } else {
-                    summaryBox.classList.add(isCorrect ? 'correct-box' : 'incorrect-box');
-                }
-                summaryBox.dataset.index = index;
-                summaryBox.title = `Click to review Question ${index + 1}`;
-
-                const timeDisplay = document.createElement('span');
-                timeDisplay.classList.add('time-display-in-box');
-                timeDisplay.textContent = `${timeSpentSec}s`;
-                summaryBox.appendChild(timeDisplay);
-
-                const numberLabel = document.createElement('div');
-                numberLabel.classList.add('question-number-label');
-                numberLabel.textContent = `Q${index + 1}`;
-
-                summaryBox.addEventListener('click', () => {
-                    revisitQuestionFromResults(index);
-                });
-
-                summaryItem.appendChild(summaryBox);
-                summaryItem.appendChild(numberLabel);
-                resultsDetailsGrid.appendChild(summaryItem);
-            });
-
-            scoreEl.textContent = score;
-            totalQuestionsResultsEl.textContent = questions.length;
-            const timeDiff = examEndTime - examStartTime;
-            timeTakenEl.textContent = formatTimeDifference(timeDiff);
         }
+
 
         function revisitQuestionFromResults(index) {
             resultsScreen.classList.add('hidden');
             resultsScreen.classList.remove('flex');
             showExamScreen();
             loadQuestion(index, true);
-            backToResultsButton.classList.remove('hidden');
         }
 
         function endExamAndShowResults() {
@@ -1064,9 +1103,20 @@
             doc.text("UCAT Quantitative Reasoning Results", margin, y);
             y += lineHeight * 1.5;
             doc.setFontSize(12);
-            doc.text(`Name: ${userName || 'N/A'}`, margin, y); y += lineHeight;
-            doc.text(`Goal: ${userGoal || 'N/A'} / ${totalQs}`, margin, y); y += lineHeight;
-            doc.text(`Focus Area: ${userFocusArea || 'N/A'}`, margin, y); y += lineHeight;
+            // Assuming you want the student name from the dashboard here - it would need to be passed or saved
+            // For now, using a placeholder or the saved name if available (need dashboard integration)
+            const studentName = localStorage.getItem('studentName') || 'N/A'; // Retrieve saved name from dashboard
+            doc.text(`Name: ${studentName}`, margin, y); y += lineHeight;
+
+            // The goal and focus area might also be set on the dashboard or setup screen.
+            // If saved to localStorage, you can retrieve them here.
+             const userGoal = localStorage.getItem('qrDrill1Goal') || 'N/A'; // Example key if saved
+             const userFocusArea = localStorage.getItem('qrDrill1FocusArea') || 'N/A'; // Example key if saved
+
+            doc.text(`Goal: ${userGoal} / ${totalQs}`, margin, y); y += lineHeight;
+            doc.text(`Focus Area: ${userFocusArea}`, margin, y); y += lineHeight;
+
+
             doc.text(`Final Score: ${finalScore} / ${totalQs}`, margin, y); y += lineHeight;
             doc.text(`Time Taken: ${timeTaken}`, margin, y); y += lineHeight * 1.5;
             doc.setFontSize(14);
@@ -1090,7 +1140,7 @@
                 const status = userAnswer === null || userAnswer === undefined ? "Not Answered" : (isCorrect ? "Correct" : "Incorrect");
                 const timeSpentSec = Math.round((questionTimes[index] || 0) / 1000);
                 const resultText = `Q${index + 1}: Your Ans: ${userAnswer || 'N/A'}, Correct: ${correctAnswer}, Status: ${status}, Time: ${timeSpentSec}s`;
-                
+
                 let textLines = doc.splitTextToSize(resultText, doc.internal.pageSize.width - margin * 2);
                 if (y + (textLines.length * (lineHeight * 0.7)) > pageHeight - margin) {
                     doc.addPage();
@@ -1099,17 +1149,24 @@
                 doc.text(textLines, margin, y);
                 y += textLines.length * (lineHeight * 0.7) + (lineHeight*0.3);
             });
-            doc.save(`ucat_qr_results_${userName || 'user'}.pdf`);
+            doc.save(`ucat_qr_results_${studentName || 'user'}_Drill1.pdf`); // Added Drill1 to filename
         }
-        
+
         // --- Calculator Functions ---
         function updateCalcDisplay() {
-            if (calcCurrentInput.length > 12 && calcCurrentInput !== 'Error') { 
-                calcDisplay.textContent = 'Error'; 
+            // Ensure display doesn't overflow, show 'Error' if too long (simple approach)
+            if (calcCurrentInput.length > 12 && calcCurrentInput !== 'Error') { // Max 12 digits before 'Error'
+                calcDisplay.textContent = 'Error'; // Or some other indicator
             } else {
                  calcDisplay.textContent = calcCurrentInput;
             }
-            calcMemoryIndicator.style.display = calcMemory !== 0 ? 'block' : 'none';
+            // Show/hide memory indicator
+            const memIndicator = document.getElementById('calc-memory-indicator');
+            if (calcMemory !== 0) {
+                memIndicator.style.display = 'block';
+            } else {
+                memIndicator.style.display = 'none';
+            }
         }
 
         function clearCalculator() {
@@ -1117,22 +1174,24 @@
             calcPreviousInput = '';
             calcOperator = null;
             calcShouldResetDisplay = false;
-            calcMrcPressedOnce = false; 
+            calcMrcPressedOnce = false;
             updateCalcDisplay();
         }
-         function inputDigit(digit) {
-            if (calcCurrentInput === 'Error') calcCurrentInput = '0'; 
+
+        function inputDigit(digit) {
+            if (calcCurrentInput === 'Error') calcCurrentInput = '0'; // Clear error on new digit
             if (calcShouldResetDisplay) {
                 calcCurrentInput = digit;
                 calcShouldResetDisplay = false;
             } else {
-                if (calcCurrentInput.includes('.') && calcCurrentInput.split('.')[1].length >= 8) return; 
-                if (!calcCurrentInput.includes('.') && calcCurrentInput.length >= 10 && calcCurrentInput !== '0') return; 
+                // Prevent excessively long numbers before decimal
+                if (calcCurrentInput.includes('.') && calcCurrentInput.split('.')[1].length >= 8) return; // Limit to 8 decimal places
+                if (!calcCurrentInput.includes('.') && calcCurrentInput.length >= 10 && calcCurrentInput !== '0') return; // Limit to 10 integer digits
 
                 calcCurrentInput = calcCurrentInput === '0' ? digit : calcCurrentInput + digit;
             }
             updateCalcDisplay();
-            calcMrcPressedOnce = false; 
+            calcMrcPressedOnce = false;
         }
 
         function inputDecimal() {
@@ -1150,10 +1209,10 @@
         function handleOperator(nextOperator) {
             if (calcCurrentInput === 'Error') return;
             const inputValue = parseFloat(calcCurrentInput);
-            if (calcOperator && !calcShouldResetDisplay) { 
+            if (calcOperator && !calcShouldResetDisplay) {
                 calculate();
-                if (calcCurrentInput === 'Error') return; 
-                calcPreviousInput = calcCurrentInput; 
+                if (calcCurrentInput === 'Error') return; // Stop if calculation resulted in error
+                calcPreviousInput = calcCurrentInput;
             } else {
                 calcPreviousInput = calcCurrentInput;
             }
@@ -1167,7 +1226,7 @@
             const prev = parseFloat(calcPreviousInput);
             const current = parseFloat(calcCurrentInput);
             if (isNaN(prev) || isNaN(current)) {
-                calcCurrentInput = 'Error'; 
+                calcCurrentInput = 'Error'; // Should not happen if inputs are validated
                 updateCalcDisplay();
                 return;
             }
@@ -1177,7 +1236,7 @@
                 case '+': result = prev + current; break;
                 case '-': result = prev - current; break;
                 case '*': result = prev * current; break;
-                case '/': 
+                case '/':
                     if (current === 0) {
                         result = 'Error';
                     } else {
@@ -1190,11 +1249,16 @@
             if (result === 'Error') {
                 calcCurrentInput = 'Error';
             } else {
-                let resultStr = parseFloat(result.toPrecision(10)).toString(); 
+                // Format result: if it's a very small or large number, toExponential might be better
+                // For simplicity, using toPrecision and then parseFloat to remove trailing zeros
+                let resultStr = parseFloat(result.toPrecision(10)).toString(); // 10 significant figures
+                if (resultStr.includes('e')) { // Handle scientific notation if it occurs
+                    // Keep it simple, or implement more complex display logic
+                }
                 calcCurrentInput = resultStr;
             }
             calcOperator = null;
-            calcShouldResetDisplay = true; 
+            calcShouldResetDisplay = true;
             updateCalcDisplay();
         }
 
@@ -1205,26 +1269,30 @@
             switch (action) {
                 case 'm+':
                     if (!isNaN(currentValue)) calcMemory += currentValue;
+                    updateCalcDisplay();
                     break;
                 case 'm-':
                     if (!isNaN(currentValue)) calcMemory -= currentValue;
+                    updateCalcDisplay();
                     break;
                 case 'mrc':
-                    if (calcMrcPressedOnce) { 
+                    if (calcMrcPressedOnce) {
                         calcMemory = 0;
                         calcMrcPressedOnce = false;
-                    } else { 
-                        calcCurrentInput = String(parseFloat(calcMemory.toPrecision(10))); 
+                        // Optionally, could also clear display to 0 here
+                    } else {
+                        calcCurrentInput = String(parseFloat(calcMemory.toPrecision(10))); // Show memory with precision
                         calcMrcPressedOnce = true;
-                        calcShouldResetDisplay = true; 
+                        calcShouldResetDisplay = true;
                     }
                     break;
             }
-            if (action !== 'mrc') { 
-                calcShouldResetDisplay = true; 
-                calcMrcPressedOnce = false; 
+            if (action !== 'mrc') { // For M+ and M-, display doesn't change immediately
+                calcShouldResetDisplay = true; // Next number input should overwrite current display
+                calcMrcPressedOnce = false;
+            } else {
+                updateCalcDisplay(); // For MRC, update display immediately
             }
-            updateCalcDisplay(); 
         }
 
         function handleSpecialFunction(func) {
@@ -1245,16 +1313,16 @@
                         const prev = parseFloat(calcPreviousInput);
                         if (isNaN(prev)) { calcCurrentInput = 'Error'; break; }
                         calcCurrentInput = String(parseFloat((prev * (currentValue / 100)).toPrecision(10)));
-                    } else { 
+                    } else {
                         calcCurrentInput = String(parseFloat((currentValue / 100).toPrecision(10)));
                     }
                     break;
                 case 'negate':
-                     if (calcCurrentInput !== '0' && !isNaN(currentValue)) { 
+                     if (calcCurrentInput !== '0' && !isNaN(currentValue)) {
                         calcCurrentInput = String(currentValue * -1);
                     }
                     break;
-                case 'backspace': 
+                case 'backspace':
                     if (calcCurrentInput === 'Error' || calcShouldResetDisplay) {
                         calcCurrentInput = '0';
                         calcShouldResetDisplay = false;
@@ -1266,7 +1334,7 @@
                     break;
             }
             updateCalcDisplay();
-            if (func !== 'backspace' && func !== 'negate') { 
+            if (func !== 'backspace' && func !== 'negate') {
                 calcShouldResetDisplay = true;
             }
             calcMrcPressedOnce = false;
@@ -1277,40 +1345,57 @@
             const isVisible = calculatorUI.classList.toggle('visible');
             calculatorToggleButton.classList.toggle('active', isVisible);
             if (isVisible) {
-                clearCalculator(); 
+                clearCalculator();
             }
         }
-         function makeDraggable(element, handle) {
+
+        // Draggable Calculator Logic
+        function makeDraggable(element, handle) {
             let currentX, currentY;
+
             handle.onmousedown = function(event) {
                 event.preventDefault();
                 isDraggingCalculator = true;
                 calculatorUI.style.cursor = 'grabbing';
+
+                // Get the initial mouse cursor position
                 currentX = event.clientX;
                 currentY = event.clientY;
+
                 document.onmouseup = closeDragElement;
                 document.onmousemove = elementDrag;
             };
+
             function elementDrag(event) {
                 event.preventDefault();
                 if (!isDraggingCalculator) return;
+
+                // Calculate the new cursor position
                 const dx = currentX - event.clientX;
                 const dy = currentY - event.clientY;
                 currentX = event.clientX;
                 currentY = event.clientY;
+
+                // Set the element's new position
                 let newTop = element.offsetTop - dy;
                 let newLeft = element.offsetLeft - dx;
+
+                // Constrain within app-container (optional, can be complex)
                 const appRect = appContainer.getBoundingClientRect();
                 const calcRect = element.getBoundingClientRect();
-                const parentRect = element.parentElement.getBoundingClientRect();
+
+                // Simple boundary check (relative to viewport for now, as appContainer might scroll)
+                // For more robust boundary, calculate relative to appContainer's scroll position
                 if (newLeft < 0) newLeft = 0;
-                if (newTop < 0) newTop = 0; 
-                if (newLeft + element.offsetWidth > parentRect.width) newLeft = parentRect.width - element.offsetWidth;
-                if (newTop + element.offsetHeight > parentRect.height) newTop = parentRect.height - element.offsetHeight;
+                if (newTop < 0) newTop = 0;
+                if (newLeft + calcRect.width > window.innerWidth) newLeft = window.innerWidth - calcRect.width;
+                if (newTop + calcRect.height > window.innerHeight) newTop = window.innerHeight - calcRect.height;
+
 
                 element.style.top = newTop + "px";
                 element.style.left = newLeft + "px";
             }
+
             function closeDragElement() {
                 isDraggingCalculator = false;
                 calculatorUI.style.cursor = 'grab';
@@ -1323,8 +1408,10 @@
         // --- Event Listeners ---
         startButton.addEventListener('click', () => {
             userName = nameInput.value.trim();
-            userGoal = goalInput.value.trim();
+            userGoal = goalInput.value.trim(); // Keeping these inputs, but not saving to localStorage here
             userFocusArea = focusAreaInput.value.trim();
+
+
             timeLeft = 4 * 60;
             userAnswers = new Array(questions.length).fill(null);
             questionTimes = new Array(questions.length).fill(0);
@@ -1334,8 +1421,8 @@
             isReviewingFromResults = false;
             isFilteringFlagged = false;
             currentlyDisplayedPassageIndex = -1;
-            examEndTime = null;
-            showExamScreen();
+            practiceSessionEndTime = null;
+            showExamScreen(); // Changed from showPracticeSessionScreen
             startTimer();
             loadQuestion(0);
             populateNavigator();
@@ -1343,21 +1430,18 @@
 
         nextButton.addEventListener('click', showNextQuestion);
         prevButton.addEventListener('click', showPrevQuestion);
-        endExamButton.addEventListener('click', endExamAndShowResults);
-        endExamButtonFooter.addEventListener('click', handleEndExamFooterClick);
-        backToResultsButton.addEventListener('click', () => { 
-            isReviewingFromResults = false; 
-            showResultsScreen(); 
-        });
-        navigatorButton.addEventListener('click', () => { 
+        endExamButton.addEventListener('click', endExamAndShowResults); // Changed from endPracticeSessionAndShowResults
+        endExamButtonFooter.addEventListener('click', handleEndExamFooterClick); // Changed from handleEndPracticeSessionFooterClick
+        backToResultsButton.addEventListener('click', () => { isReviewingFromResults = false; showResultsScreen(); });
+        navigatorButton.addEventListener('click', () => {
             // Hide calculator if it's open
             if (calculatorUI.classList.contains('visible')) {
-                toggleCalculator(); 
+                toggleCalculator();
             }
-            recordTimeSpent(currentQuestionIndex); 
-            updateNavigatorButtons(); 
-            navigatorModal.classList.remove('hidden'); 
-            navigatorModal.classList.add('flex'); 
+            recordTimeSpent(currentQuestionIndex);
+            updateNavigatorButtons();
+            navigatorModal.classList.remove('hidden');
+            navigatorModal.classList.add('flex');
         });
         closeModalButton.addEventListener('click', () => { navigatorModal.classList.remove('flex'); navigatorModal.classList.add('hidden'); if (!isReviewingFromResults) questionStartTime = Date.now(); });
         navigatorModal.addEventListener('click', (event) => { if (event.target === navigatorModal) closeModalButton.click(); });
@@ -1375,55 +1459,55 @@
                 const value = button.dataset.calcValue;
                 const action = button.dataset.calcAction;
 
-                if (value !== undefined) { 
-                    if (value === '.') { inputDecimal(); } 
+                if (value !== undefined) {
+                    if (value === '.') { inputDecimal(); }
                     else { inputDigit(value); }
-                } else if (action) { 
-                    if (['+', '-', '*', '/'].includes(action)) { handleOperator(action); } 
-                    else if (action === 'equals') { calculate(); } 
-                    else if (action === 'clear') { clearCalculator(); } 
-                    else if (['m+', 'm-', 'mrc'].includes(action)) { handleMemory(action); } 
+                } else if (action) {
+                    if (['+', '-', '*', '/'].includes(action)) { handleOperator(action); }
+                    else if (action === 'equals') { calculate(); }
+                    else if (action === 'clear') { clearCalculator(); }
+                    else if (['m+', 'm-', 'mrc'].includes(action)) { handleMemory(action); }
                     else if (['sqrt', 'percent', 'negate', 'backspace'].includes(action)) { handleSpecialFunction(action); }
                 }
             });
         });
 
         function handleKeyboardShortcuts(e) {
-             const isExamVisible = !examScreen.classList.contains('hidden');
+             const isExamVisible = !examScreen.classList.contains('hidden'); // Changed from practiceSessionScreen
              const isModalVisible = navigatorModal.classList.contains('flex');
              const isInputFocused = document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA');
              const isCalcVisible = calculatorUI.classList.contains('visible');
 
-             if (isCalcVisible && !isInputFocused) { 
+             if (isCalcVisible && !isInputFocused) {
                 if (e.key >= '0' && e.key <= '9') { e.preventDefault(); inputDigit(e.key); return; }
                 if (e.key === '.') { e.preventDefault(); inputDecimal(); return; }
                 if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') { e.preventDefault(); handleOperator(e.key); return; }
                 if (e.key === 'Enter' || e.key === '=') { e.preventDefault(); calculate(); return; }
-                if (e.key === 'Backspace') { e.preventDefault(); handleSpecialFunction('backspace'); return; } 
-                if (e.key === 'Escape') { e.preventDefault(); toggleCalculator(); return; } 
+                if (e.key === 'Backspace') { e.preventDefault(); handleSpecialFunction('backspace'); return; }
+                if (e.key === 'Escape') { e.preventDefault(); toggleCalculator(); return; }
                 if (e.key.toLowerCase() === 'p') { e.preventDefault(); handleMemory('m+'); return; }
                 if (e.key.toLowerCase() === 'm') { e.preventDefault(); handleMemory('m-'); return; }
-                if (e.key.toLowerCase() === 'c' && !e.altKey && !e.metaKey && !e.ctrlKey) { e.preventDefault(); handleMemory('mrc'); return; } 
+                if (e.key.toLowerCase() === 'c' && !e.altKey && !e.metaKey && !e.ctrlKey) { e.preventDefault(); handleMemory('mrc'); return; }
                 if (e.key.toLowerCase() === 'x') { e.preventDefault(); handleSpecialFunction('sqrt'); return; }
              }
-             
-             if (isModalVisible || isInputFocused) return; 
-             if (!isExamVisible) return; 
-             
+
+             if (isModalVisible || isInputFocused) return;
+             if (!isExamVisible) return; // Changed from isPracticeSessionVisible
+
              const key = e.key.toLowerCase();
-             const altOrOption = e.altKey || e.metaKey; 
-             const code = e.code.toLowerCase(); 
+             const altOrOption = e.altKey || e.metaKey;
+             const code = e.code.toLowerCase();
 
              if (altOrOption) {
-                 switch (code) { 
+                 switch (code) {
                      case 'keyn': e.preventDefault(); if (!nextButton.disabled) nextButton.click(); return;
                      case 'keyp': e.preventDefault(); if (!prevButton.disabled) prevButton.click(); return;
                      case 'keyf': e.preventDefault(); if (!isReviewingFromResults && !flagButton.disabled) flagButton.click(); return;
-                     case 'keyc': e.preventDefault(); toggleCalculator(); return; 
-                     default: return; 
+                     case 'keyc': e.preventDefault(); toggleCalculator(); return;
+                     default: return;
                  }
-             } else { 
-                 if (['a', 'b', 'c', 'd', 'e'].includes(key) && !isReviewingFromResults && !isCalcVisible) { 
+             } else {
+                 if (['a', 'b', 'c', 'd', 'e'].includes(key) && !isReviewingFromResults && !isCalcVisible) {
                      e.preventDefault();
                      const optionIndex = ['a', 'b', 'c', 'd', 'e'].indexOf(key);
                      const optionValue = ['A', 'B', 'C', 'D', 'E'][optionIndex];
@@ -1439,7 +1523,25 @@
 
         // --- Initial Load ---
         showSetupScreen();
-        updateCalcDisplay(); 
+        updateCalcDisplay();
+
+        // Update the review grid button click handler to not restart the timer
+        reviewGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('review-grid-button')) {
+                reviewScreen.classList.add('hidden');
+                reviewScreen.classList.remove('flex');
+                showExamScreen(); // Changed from showPracticeSessionScreen
+                const index = parseInt(e.target.dataset.questionIndex);
+                if (!isNaN(index) && index >= 0 && index < questions.length) {
+                    // Hide calculator if it's open
+                    if (calculatorUI.classList.contains('visible')) {
+                        toggleCalculator();
+                    }
+                    loadQuestion(index);
+                    // Removed updateTimerVisibility() call here
+                }
+            }
+        });
     </script>
 </body>
 </html>
