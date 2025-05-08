@@ -971,10 +971,40 @@
              });
          }
 
+        // --- Function to save results and reflection to localStorage ---
+        function saveResultsAndReflection() {
+            const score = scoreEl.textContent;
+            const totalQuestions = totalQuestionsResultsEl.textContent;
+            const timeTaken = timeTakenEl.textContent;
+            const reflection = reflectionText.value.trim();
+            const focusRating = focusRatingInput.value;
+
+            // Save results data
+            const resultsData = {
+                score: score,
+                totalQuestions: totalQuestions,
+                timeTaken: timeTaken
+            };
+            // Using a specific key for Drill 1 results
+            localStorage.setItem('qrDrill1Results', JSON.stringify(resultsData));
+
+            // Save reflection data
+            // Using specific keys for Drill 1 reflection and focus rating
+            localStorage.setItem('qrDrill1Reflection', reflection);
+            localStorage.setItem('qrDrill1FocusRating', focusRating);
+
+            console.log("Drill 1 Results and Reflection Saved:", resultsData, reflection, focusRating);
+        }
+
+
         function showResultsScreen() {
             practiceSessionEndTime = practiceSessionEndTime || new Date();
             recordTimeSpent(currentQuestionIndex);
             stopTimer();
+
+            // --- Save results and reflection before showing the screen ---
+            saveResultsAndReflection();
+            // -------------------------------------------------------------
 
             practiceSessionScreen.classList.add('hidden');
             reviewScreen.classList.add('hidden');
@@ -1031,6 +1061,13 @@
             totalQuestionsResultsEl.textContent = questions.length;
             const timeDiff = practiceSessionEndTime - practiceSessionStartTime;
             timeTakenEl.textContent = formatTimeDifference(timeDiff);
+
+            // Pre-fill reflection and focus rating fields on the results screen if saved (optional, but helpful)
+             const savedReflection = localStorage.getItem('qrDrill1Reflection');
+             const savedFocus = localStorage.getItem('qrDrill1FocusRating');
+             if (reflectionText && savedReflection !== null) reflectionText.value = savedReflection;
+             if (focusRatingInput && savedFocus !== null) focusRatingInput.value = savedFocus;
+
         }
 
 
@@ -1069,9 +1106,20 @@
             doc.text("UCAT Quantitative Reasoning Results", margin, y);
             y += lineHeight * 1.5;
             doc.setFontSize(12);
-            doc.text(`Name: ${userName || 'N/A'}`, margin, y); y += lineHeight;
-            doc.text(`Goal: ${userGoal || 'N/A'} / ${totalQs}`, margin, y); y += lineHeight;
-            doc.text(`Focus Area: ${userFocusArea || 'N/A'}`, margin, y); y += lineHeight;
+            // Assuming you want the student name from the dashboard here - it would need to be passed or saved
+            // For now, using a placeholder or the saved name if available (need dashboard integration)
+            const studentName = localStorage.getItem('studentName') || 'N/A'; // Retrieve saved name from dashboard
+            doc.text(`Name: ${studentName}`, margin, y); y += lineHeight;
+
+            // The goal and focus area might also be set on the dashboard or setup screen.
+            // If saved to localStorage, you can retrieve them here.
+             const userGoal = localStorage.getItem('qrDrill1Goal') || 'N/A'; // Example key if saved
+             const userFocusArea = localStorage.getItem('qrDrill1FocusArea') || 'N/A'; // Example key if saved
+
+            doc.text(`Goal: ${userGoal} / ${totalQs}`, margin, y); y += lineHeight;
+            doc.text(`Focus Area: ${userFocusArea}`, margin, y); y += lineHeight;
+
+
             doc.text(`Final Score: ${finalScore} / ${totalQs}`, margin, y); y += lineHeight;
             doc.text(`Time Taken: ${timeTaken}`, margin, y); y += lineHeight * 1.5;
             doc.setFontSize(14);
@@ -1104,7 +1152,7 @@
                 doc.text(textLines, margin, y);
                 y += textLines.length * (lineHeight * 0.7) + (lineHeight*0.3);
             });
-            doc.save(`ucat_qr_results_${userName || 'user'}.pdf`);
+            doc.save(`ucat_qr_results_${studentName || 'user'}_Drill1.pdf`); // Added Drill1 to filename
         }
 
         // --- Calculator Functions ---
@@ -1365,6 +1413,13 @@
             userName = nameInput.value.trim();
             userGoal = goalInput.value.trim();
             userFocusArea = focusAreaInput.value.trim();
+
+            // --- Save Goal and Focus Area to localStorage for this drill ---
+             localStorage.setItem('qrDrill1Goal', userGoal);
+             localStorage.setItem('qrDrill1FocusArea', userFocusArea);
+            // ------------------------------------------------------------
+
+
             timeLeft = 4 * 60;
             userAnswers = new Array(questions.length).fill(null);
             questionTimes = new Array(questions.length).fill(0);
