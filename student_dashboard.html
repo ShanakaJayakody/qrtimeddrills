@@ -23,53 +23,56 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             padding: 2rem; /* Increased padding */
             width: 100%;
-            max-width: 600px; /* Max width from screenshot */
+            max-width: 600px; /* Adjust max-width to match screenshot feel */
             text-align: center; /* Center align content */
         }
-        /* Style for the drill containers */
+        /* Style for the drill items */
         .drill-item {
-            display: flex; /* Use flexbox to align link and status */
-            justify-content: space-between; /* Space out link and status */
-            align-items: center; /* Vertically align content */
-            background-color: #e2f0ff; /* Light blue background */
-            padding: 1rem; /* Padding inside item */
-            margin-bottom: 0.75rem; /* Space between items */
-            border-radius: 0.5rem; /* Rounded corners */
-            border: 1px solid #b3d4ff; /* Subtle border */
-        }
-        /* Style for the drill links within the container */
-        .drill-link {
-            flex-grow: 1; /* Allow link to take available space */
-            text-align: left; /* Align link text to the left */
+            display: flex; /* Use flexbox for layout */
+            justify-content: space-between; /* Space out content */
+            align-items: center; /* Vertically align items */
+            background-color: #e2f0ff; /* Light blue background for items */
             color: #0056b3; /* Darker blue text color */
-            text-decoration: none; /* Remove underline */
+            padding: 1rem; /* Padding inside items */
+            margin-bottom: 0.75rem; /* Space between items */
+            border-radius: 0.5rem; /* Rounded corners for items */
+            text-decoration: none; /* Remove underline for the link part */
             font-size: 1.1rem; /* Slightly larger font size */
             font-weight: 600; /* Semi-bold font */
-             /* Remove default block/padding from previous version */
-             display: inline;
-             padding: 0;
-             margin: 0;
+            transition: background-color 0.2s ease, transform 0.1s ease; /* Smooth hover effect */
+            border: 1px solid #b3d4ff; /* Subtle border */
         }
-        .drill-item:hover {
+        .drill-item a {
+            color: #0056b3; /* Ensure link text color is correct */
+            text-decoration: none; /* Remove underline from link */
+            flex-grow: 1; /* Allow link to take available space */
+            text-align: left; /* Align link text to the left */
+            padding-right: 1rem; /* Add some space between link and status */
+        }
+         .drill-item:hover {
             background-color: #cce0ff; /* Lighter blue on hover */
-             cursor: pointer; /* Indicate it's clickable */
+            transform: translateY(-2px); /* Slight lift effect */
         }
          .drill-item:active {
             transform: translateY(0); /* Press down effect */
         }
-
-        /* Style for status/score text */
         .drill-status {
-            font-size: 0.9rem;
-            color: #4a5568; /* Gray text */
-            margin-left: 1rem; /* Space between link and status */
-             flex-shrink: 0; /* Prevent status from shrinking */
+            font-size: 0.9rem; /* Smaller font for status */
+            font-weight: 400; /* Normal weight for status */
+            color: #4a5568; /* Gray text for status */
+            text-align: right; /* Align status text to the right */
         }
 
         /* Add a logo or image */
         .logo {
             max-width: 150px; /* Adjust size as needed */
             margin: 0 auto 1.5rem auto; /* Center and add space below */
+        }
+
+        /* Hide the old performance and reflection sections */
+        #overall-performance-section,
+        #personal-reflections-section {
+            display: none;
         }
     </style>
      <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,86 +91,143 @@
             <input type="text" id="student-name" name="student-name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-base" placeholder="Enter your name">
         </div>
 
-        <div id="drills-list" class="space-y-3">
+        <div id="drill-list-container" class="space-y-3">
             </div>
+
+        <div id="overall-performance-section" class="dashboard-section">
+            <h2>Overall Performance</h2>
+            <div id="performance-list">
+                </div>
+        </div>
+
+        <div id="personal-reflections-section" class="dashboard-section">
+             <h2>Personal Reflections</h2>
+             <div id="reflections-list">
+                 </div>
+         </div>
 
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const studentNameInput = document.getElementById('student-name');
-            const drillsList = document.getElementById('drills-list');
+        // List of QR drill files
+        const qrDrillFiles = [
+            'qr index 1.html',
+            'qr index 2.html',
+            'qr index 3.html',
+            'qr index 4.html',
+            'qr index 5.html',
+            'qr index 6.html',
+        ];
 
-            // --- Student Name Logic ---
+        const drillListContainer = document.getElementById('drill-list-container');
+        const studentNameInput = document.getElementById('student-name');
 
-            // Load name from localStorage when the page loads
-            const savedName = localStorage.getItem('studentName');
-            if (savedName) {
-                studentNameInput.value = savedName;
+        // Function to format time string "X min Y sec" into total seconds
+        function parseTime(timeString) {
+            const parts = timeString.match(/(\d+)\s*min\s*(\d+)\s*sec/);
+            if (parts && parts.length === 3) {
+                const minutes = parseInt(parts[1], 10);
+                const seconds = parseInt(parts[2], 10);
+                return minutes * 60 + seconds;
             }
+            return 0; // Return 0 if format doesn't match
+        }
 
-            // Save name to localStorage whenever the input changes
-            studentNameInput.addEventListener('input', (event) => {
-                localStorage.setItem('studentName', event.target.value);
-            });
+        // Function to fetch and parse results from a drill file
+        async function fetchDrillResults(fileName) {
+            try {
+                const response = await fetch(fileName);
+                if (!response.ok) {
+                    console.warn(`Could not fetch ${fileName}: ${response.statusText}`);
+                    return null; // File not found or other error
+                }
+                const htmlText = await response.text();
 
-            // --- Load and Display Drill Status and Score ---
+                // Parse the HTML content
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
 
-            // Define the list of drills and the localStorage keys for their results.
-            // Ensure these keys match exactly what your qr index files use to save results.
-            const drills = [
-                { id: 'qrDrill1', name: 'Timed QR Drill 1', file: 'qr index 1.html', resultsKey: 'qrDrill1Results' },
-                { id: 'qrDrill2', name: 'Timed QR Drill 2', file: 'qr index 2.html', resultsKey: 'qrDrill2Results' },
-                { id: 'qrDrill3', name: 'Timed QR Drill 3', file: 'qr index 3.html', resultsKey: 'qrDrill3Results' },
-                { id: 'qrDrill4', name: 'Timed QR Drill 4', file: 'qr index 4.html', resultsKey: 'qrDrill4Results' },
-                { id: 'qrDrill5', name: 'Timed QR Drill 5', file: 'qr index 5.html', resultsKey: 'qrDrill5Results' },
-                { id: 'qrDrill6', name: 'Timed QR Drill 6', file: 'qr index 6.html', resultsKey: 'qrDrill6Results' },
-                // Add more drills here following the same pattern
-            ];
+                // Find the results elements - adjust selectors if needed based on your drill file structure
+                const scoreEl = doc.getElementById('score');
+                const totalQuestionsEl = doc.getElementById('total-questions-results');
+                const timeTakenEl = doc.getElementById('time-taken');
 
-            // Clear any static content and dynamically load drills
-            drillsList.innerHTML = '';
+                if (scoreEl && totalQuestionsEl && timeTakenEl) {
+                    const score = parseInt(scoreEl.textContent, 10);
+                    const totalQuestions = parseInt(totalQuestionsEl.textContent, 10);
+                    const timeTakenString = timeTakenEl.textContent;
+                    const timeTakenSeconds = parseTime(timeTakenString);
 
-            drills.forEach(drill => {
+                    if (!isNaN(score) && !isNaN(totalQuestions) && totalQuestions > 0) {
+                        const accuracy = (score / totalQuestions) * 100;
+                        const speed = timeTakenSeconds > 0 ? (timeTakenSeconds / totalQuestions) : 0; // seconds per question
+
+                        return {
+                            completed: true,
+                            score: score,
+                            totalQuestions: totalQuestions,
+                            accuracy: accuracy.toFixed(1), // 1 decimal place
+                            speed: speed.toFixed(1) // 1 decimal place
+                        };
+                    }
+                }
+                // If elements not found or parsing fails
+                return null;
+
+            } catch (error) {
+                console.error(`Error fetching or parsing ${fileName}:`, error);
+                return null; // Error during fetch or parsing
+            }
+        }
+
+        // Function to render the drill list
+        async function renderDrillList() {
+            drillListContainer.innerHTML = ''; // Clear current list
+
+            for (const [index, fileName] of qrDrillFiles.entries()) {
+                const drillNumber = index + 1;
+                const drillName = `Timed QR Drill ${drillNumber}`;
+                const drillLink = fileName; // The actual file name is the link target
+
                 const drillItem = document.createElement('div');
                 drillItem.classList.add('drill-item');
-                drillItem.dataset.drillId = drill.id; // Add data attribute to identify the drill
 
-                const drillLink = document.createElement('a');
-                drillLink.href = drill.file;
-                drillLink.classList.add('drill-link');
-                drillLink.textContent = drill.name;
+                const linkElement = document.createElement('a');
+                linkElement.href = drillLink;
+                linkElement.textContent = drillName;
+                linkElement.target = "_blank"; // Open in new tab
 
-                const drillStatusSpan = document.createElement('span');
-                drillStatusSpan.classList.add('drill-status');
+                const statusElement = document.createElement('span');
+                statusElement.classList.add('drill-status');
 
-                // Check localStorage for results
-                const resultsData = localStorage.getItem(drill.resultsKey);
+                // Attempt to fetch results
+                const results = await fetchDrillResults(fileName);
 
-                if (resultsData) {
-                    try {
-                        const results = JSON.parse(resultsData);
-                        // Assuming results object has score and totalQuestions
-                        drillStatusSpan.textContent = `Completed: Score ${results.score} / ${results.totalQuestions}`;
-                    } catch (e) {
-                        console.error(`Error parsing results for ${drill.name}:`, e);
-                        drillStatusSpan.textContent = `Completed (Error loading score)`;
-                    }
+                if (results && results.completed) {
+                    statusElement.innerHTML = `Completed: Score ${results.score}/${results.totalQuestions}<br>Accuracy: ${results.accuracy}%<br>Speed: ${results.speed} s/q`;
                 } else {
-                    drillStatusSpan.textContent = 'Incompleted';
+                    statusElement.textContent = 'Incompleted';
                 }
 
-                drillItem.appendChild(drillLink);
-                drillItem.appendChild(drillStatusSpan);
+                drillItem.appendChild(linkElement);
+                drillItem.appendChild(statusElement);
+                drillListContainer.appendChild(drillItem);
+            }
+        }
 
-                drillsList.appendChild(drillItem);
+        // Load the drill list when the page loads
+        document.addEventListener('DOMContentLoaded', renderDrillList);
 
-                // Add event listener to the drill item container to make the whole area clickable
-                drillItem.addEventListener('click', () => {
-                    window.location.href = drill.file; // Navigate to the drill page
-                });
-            });
+        // Optional: Save and load student name from local storage
+        const savedStudentName = localStorage.getItem('studentName');
+        if (savedStudentName) {
+            studentNameInput.value = savedStudentName;
+        }
+
+        studentNameInput.addEventListener('input', () => {
+            localStorage.setItem('studentName', studentNameInput.value);
         });
+
     </script>
 
 </body>
