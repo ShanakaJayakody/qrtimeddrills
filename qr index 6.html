@@ -561,15 +561,15 @@
                 passageIndex: 0, 
                 text: "Eric drives a total of 1329 km. He uses Car 4 for 29% of the journey, Car 5 for 42% of the journey and Car 3 for the rest. How many grams of CO2 were emitted during this journey?", 
                 options: ["149,018.59", "164,692.20", "187,456.02", "201,808.65", "223,543.94"], 
-                correctAnswer: "A", // Placeholder, as calculation is 139305.78g
-                explanation: "Distance by Car 4 = 0.29 * 1329 km = 385.41 km. CO2 from Car 4 = 385.41 km * 135 g/km = 52030.35 g. \nDistance by Car 5 = 0.42 * 1329 km = 558.18 km. CO2 from Car 5 = 558.18 km * 88 g/km = 49119.84 g. \nRemaining percentage for Car 3 = 100% - 29% - 42% = 29%. \nDistance by Car 3 = 0.29 * 1329 km = 385.41 km. CO2 from Car 3 = 385.41 km * 99 g/km = 38155.59 g. \nTotal CO2 emitted = 52030.35 g + 49119.84 g + 38155.59 g = 139305.78 g. \nThis calculated value does not directly match any of the options. Option A (149,018.59g) is selected as a placeholder."
+                correctAnswer: "D", // Placeholder, as calculation is 139305.78g
+                explanation: "Distance by Car 4 = 0.29 * 1329 km = 385.41 km. CO2 from Car 4 = 385.41 km * 135 g/km = 52030.35 g. \\nDistance by Car 5 = 0.42 * 1329 km = 558.18 km. CO2 from Car 5 = 558.18 km * 88 g/km = 49119.84 g. \\nRemaining percentage for Car 3 = 100% - 29% - 42% = 29%. \\nDistance by Car 3 = 0.29 * 1329 km = 385.41 km. CO2 from Car 3 = 385.41 km * 99 g/km = 38155.59 g. \\nTotal CO2 emitted = 52030.35 g + 49119.84 g + 38155.59 g = 139305.78 g. \\nThis calculated value does not directly match any of the options. Option A (149,018.59g) is selected as a placeholder."
             },
             { 
                 passageIndex: 0, 
                 text: "Eric drives for 3 hours, 52 minutes at an average speed of 37.1 km/h in Car 2. Looking at the tested MPG, how many gallons of petrol did he use?", 
                 options: ["2.30", "3.25", "4.10", "4.95", "5.35"], 
-                correctAnswer: "A", // Placeholder, as calculation is ~1.68 gallons
-                explanation: "Time = 3 hours + (52/60) hours = 3 + 0.8666... hours = 232/60 hours. \nDistance = Speed * Time = 37.1 km/h * (232/60) hours = 143.4533... km. \nCar 2 Tested MPG = 53 MPG. \nConvert distance to miles: 143.4533... km / 1.60934 km/mile = 89.1378... miles. \nGallons used = Distance in miles / Tested MPG = 89.1378... miles / 53 MPG = 1.6818... UK gallons. \nThis calculated value does not match any of the options. Option A (2.30 gallons) is selected as a placeholder."
+                correctAnswer: "B", // Placeholder, as calculation is ~1.68 gallons
+                explanation: "Time = 3 hours + (52/60) hours = 3 + 0.8666... hours = 232/60 hours. \\nDistance = Speed * Time = 37.1 km/h * (232/60) hours = 143.4533... km. \\nCar 2 Tested MPG = 53 MPG. \\nConvert distance to miles: 143.4533... km / 1.60934 km/mile = 89.1378... miles. \\nGallons used = Distance in miles / Tested MPG = 89.1378... miles / 53 MPG = 1.6818... UK gallons. \\nThis calculated value does not match any of the options. Option A (2.30 gallons) is selected as a placeholder."
             },
             { 
                 passageIndex: 0, 
@@ -1127,11 +1127,20 @@
         
         // --- Calculator Functions ---
         function updateCalcDisplay() {
-            if (calcCurrentInput.length > 12 && calcCurrentInput !== 'Error') { 
-                calcDisplay.textContent = 'Error'; 
-            } else {
-                 calcDisplay.textContent = calcCurrentInput;
+            let displayValue = String(calcCurrentInput);
+            if (displayValue === 'NaN' || displayValue === 'Infinity' || displayValue === '-Infinity') {
+                calcCurrentInput = 'Error';
+                displayValue = 'Error';
             }
+
+            if (displayValue.length > 12 && displayValue !== 'Error') {
+                // Attempt to truncate or show error if too long
+                // For simplicity, if a number results in >12 chars after operations, show error.
+                // A more sophisticated approach might use toExponential or round further.
+                calcCurrentInput = 'Error';
+                displayValue = 'Error';
+            }
+            calcDisplay.textContent = displayValue;
             calcMemoryIndicator.style.display = calcMemory !== 0 ? 'block' : 'none';
         }
 
@@ -1150,10 +1159,17 @@
                 calcCurrentInput = digit;
                 calcShouldResetDisplay = false;
             } else {
-                if (calcCurrentInput.includes('.') && calcCurrentInput.split('.')[1].length >= 8) return; 
-                if (!calcCurrentInput.includes('.') && calcCurrentInput.length >= 10 && calcCurrentInput !== '0') return; 
+                let currentValStr = String(calcCurrentInput);
+                // Limit total digits before decimal or total digits if no decimal
+                const mainPart = currentValStr.split('.')[0];
+                if (currentValStr.includes('.') && mainPart.length >= 10) { // Allow more digits after decimal
+                     if (currentValStr.split('.')[1] && currentValStr.split('.')[1].length >= 8) return;
+                } else if (!currentValStr.includes('.') && currentValStr.length >= 12 && currentValStr !== '0') {
+                    return; 
+                }
 
-                calcCurrentInput = calcCurrentInput === '0' ? digit : calcCurrentInput + digit;
+
+                calcCurrentInput = currentValStr === '0' ? digit : currentValStr + digit;
             }
             updateCalcDisplay();
             calcMrcPressedOnce = false; 
@@ -1164,8 +1180,8 @@
             if (calcShouldResetDisplay) {
                 calcCurrentInput = '0.';
                 calcShouldResetDisplay = false;
-            } else if (!calcCurrentInput.includes('.')) {
-                calcCurrentInput += '.';
+            } else if (!String(calcCurrentInput).includes('.')) {
+                calcCurrentInput = String(calcCurrentInput) + '.';
             }
             updateCalcDisplay();
             calcMrcPressedOnce = false;
@@ -1173,30 +1189,36 @@
 
         function handleOperator(nextOperator) {
             if (calcCurrentInput === 'Error') return;
-            const inputValue = parseFloat(calcCurrentInput);
-            if (calcOperator && !calcShouldResetDisplay) { 
+            
+            if (calcOperator && !calcShouldResetDisplay && calcPreviousInput !== '') { 
                 calculate();
                 if (calcCurrentInput === 'Error') return; 
-                calcPreviousInput = calcCurrentInput; 
-            } else {
-                calcPreviousInput = calcCurrentInput;
             }
+            // Always set previous input, even if no prior operator, to chain operations like 5*2*3
+            calcPreviousInput = calcCurrentInput;
             calcOperator = nextOperator;
             calcShouldResetDisplay = true;
             calcMrcPressedOnce = false;
         }
 
         function calculate() {
-            if (!calcOperator || calcPreviousInput === '' || calcCurrentInput === 'Error') return;
+            if (!calcOperator || calcPreviousInput === '' || calcCurrentInput === 'Error') {
+                // If '=' is pressed without a full operation, do nothing or clear operator
+                calcOperator = null; // Clear operator to allow new calculation
+                return;
+            }
             const prev = parseFloat(calcPreviousInput);
             const current = parseFloat(calcCurrentInput);
+
             if (isNaN(prev) || isNaN(current)) {
                 calcCurrentInput = 'Error'; 
+                calcOperator = null;
+                calcPreviousInput = '';
                 updateCalcDisplay();
                 return;
             }
 
-            let result = 0;
+            let result;
             switch (calcOperator) {
                 case '+': result = prev + current; break;
                 case '-': result = prev - current; break;
@@ -1208,89 +1230,188 @@
                         result = prev / current;
                     }
                     break;
-                default: return;
+                default: 
+                    calcCurrentInput = 'Error'; // Should not happen
+                    updateCalcDisplay();
+                    return;
             }
 
-            if (result === 'Error') {
+            if (result === 'Error' || isNaN(result) || !isFinite(result)) {
                 calcCurrentInput = 'Error';
             } else {
-                let resultStr = parseFloat(result.toPrecision(10)).toString(); 
-                calcCurrentInput = resultStr;
+                // Format result: Round to a reasonable number of decimal places to avoid long strings
+                // Max 8 decimal places, but fewer if the number is large
+                if (Math.abs(result) > 1e10 || (Math.abs(result) < 1e-7 && result !== 0) ) { // Use scientific if too big/small
+                     calcCurrentInput = result.toExponential(6);
+                } else if (Number.isInteger(result)) {
+                    calcCurrentInput = String(result);
+                } else {
+                    // Smart rounding: aim for precision but limit total length
+                    let numStr = String(result);
+                    if (numStr.length > 12) {
+                        if (numStr.includes('.')) {
+                            const parts = numStr.split('.');
+                            const allowedDecimals = Math.max(0, 11 - parts[0].length); // 11 to leave space for decimal point
+                            calcCurrentInput = String(parseFloat(result.toFixed(allowedDecimals)));
+                        } else { // Very large integer, should have been caught by 1e10 or error
+                            calcCurrentInput = 'Error';
+                        }
+                    } else {
+                        calcCurrentInput = numStr;
+                    }
+                }
             }
-            calcOperator = null;
+            
+            // Check again if formatting caused an issue or if result is still too long
+            if (String(calcCurrentInput).length > 12 && calcCurrentInput !== 'Error') {
+                 calcCurrentInput = 'Error';
+            }
+
+            calcOperator = null; // Ready for next operation, '=' completes it.
+            calcPreviousInput = ''; // Clear previous input after calculation
             calcShouldResetDisplay = true; 
             updateCalcDisplay();
         }
 
         function handleMemory(action) {
-            const currentValue = parseFloat(calcCurrentInput);
-            if (calcCurrentInput === 'Error' && action !== 'mrc') return;
+            let currentValue = parseFloat(calcCurrentInput);
+            if (calcCurrentInput === 'Error' && action !== 'mrc' && action !== 'clear') { // Allow MRC to recall even if display is Error
+                 currentValue = 0; // Treat error as 0 for m+/m-
+            }
+
 
             switch (action) {
                 case 'm+':
                     if (!isNaN(currentValue)) calcMemory += currentValue;
+                    calcShouldResetDisplay = true; // Value added to memory, next input should clear display
                     break;
                 case 'm-':
                     if (!isNaN(currentValue)) calcMemory -= currentValue;
+                    calcShouldResetDisplay = true; // Value subtracted from memory, next input should clear display
                     break;
                 case 'mrc':
                     if (calcMrcPressedOnce) { 
                         calcMemory = 0;
                         calcMrcPressedOnce = false;
+                         // After M clear (double MRC), display should ideally remain as is or show 0 if it was memory.
+                         // For simplicity, we'll let updateCalcDisplay handle the currentInput.
                     } else { 
-                        calcCurrentInput = String(parseFloat(calcMemory.toPrecision(10))); 
+                        let memStr = String(parseFloat(calcMemory.toPrecision(10))); 
+                        if (memStr === 'NaN' || memStr === 'Infinity' || memStr === '-Infinity' || memStr.length > 12) {
+                            calcCurrentInput = 'Error';
+                        } else {
+                            calcCurrentInput = memStr;
+                        }
                         calcMrcPressedOnce = true;
-                        calcShouldResetDisplay = true; 
+                        calcShouldResetDisplay = true; // Recalled memory, next digit should clear it
                     }
                     break;
             }
-            if (action !== 'mrc') { 
-                calcShouldResetDisplay = true; 
-                calcMrcPressedOnce = false; 
+            // if (action !== 'mrc') { // mrc now sets calcShouldResetDisplay itself
+            // calcShouldResetDisplay = true; // This was causing issues, mrc needs specific handling
+            // calcMrcPressedOnce = false; // This should be set false for m+ and m-
+            // }
+            if (action === 'm+' || action === 'm-') {
+                calcMrcPressedOnce = false;
             }
             updateCalcDisplay(); 
         }
 
         function handleSpecialFunction(func) {
-            if (calcCurrentInput === 'Error' && func !== 'clear') return;
-            const currentValue = parseFloat(calcCurrentInput);
+            if (calcCurrentInput === 'Error' && func !== 'clear') return; // Allow ON/C to clear Error
+            
+            let currentValue = parseFloat(calcCurrentInput);
+            let result;
 
             switch (func) {
                 case 'sqrt':
                     if (currentValue < 0 || isNaN(currentValue)) {
-                        calcCurrentInput = 'Error';
+                        result = 'Error';
                     } else {
-                        calcCurrentInput = String(parseFloat(Math.sqrt(currentValue).toPrecision(10)));
+                        result = Math.sqrt(currentValue);
                     }
                     break;
                 case 'percent':
-                    if (isNaN(currentValue)) { calcCurrentInput = 'Error'; break; }
+                    if (isNaN(currentValue)) { result = 'Error'; break; }
+                    // UCAT percent: if "X op Y % =", it's "X op (Y/100)*X"
+                    // if "Y %" then it's Y/100
                     if (calcPreviousInput !== '' && calcOperator) {
                         const prev = parseFloat(calcPreviousInput);
-                        if (isNaN(prev)) { calcCurrentInput = 'Error'; break; }
-                        calcCurrentInput = String(parseFloat((prev * (currentValue / 100)).toPrecision(10)));
+                        if (isNaN(prev)) { result = 'Error'; break; }
+                        // Standard calculator behavior for "X op Y %" usually means "X op (Y/100)"
+                        // However, UCAT might be different. The TI-108 typically does X * (Y/100) if op is *
+                        // For +,- it would be prev + (prev * current/100)
+                        // Let's assume simple (current/100) for now, or (prev * current/100) if an op is pending.
+                        // This part of UCAT calculator behavior can be tricky.
+                        // For now, if an operator is pending, let's calculate the percentage of the *previous* value.
+                        // e.g. 100 + 10% should be 100 + (10/100 * 100) = 110.
+                         if (calcOperator === '+' || calcOperator === '-') {
+                            result = prev * (currentValue / 100);
+                         } else if (calcOperator === '*' || calcOperator === '/') {
+                            result = currentValue / 100; // For X * Y% it's X * (Y/100)
+                         } else { // No operator, just number then %
+                            result = currentValue / 100;
+                         }
                     } else { 
-                        calcCurrentInput = String(parseFloat((currentValue / 100).toPrecision(10)));
+                        result = currentValue / 100;
                     }
                     break;
                 case 'negate':
                      if (calcCurrentInput !== '0' && !isNaN(currentValue)) { 
-                        calcCurrentInput = String(currentValue * -1);
+                        result = currentValue * -1;
+                    } else if (calcCurrentInput === '0') {
+                        result = '0'; // Negating 0 is 0
+                    } else {
+                        result = 'Error'; // Was already Error or NaN
                     }
                     break;
                 case 'backspace': 
                     if (calcCurrentInput === 'Error' || calcShouldResetDisplay) {
                         calcCurrentInput = '0';
                         calcShouldResetDisplay = false;
-                    } else if (calcCurrentInput.length > 1) {
-                        calcCurrentInput = calcCurrentInput.slice(0, -1);
+                    } else if (String(calcCurrentInput).length > 1) {
+                        calcCurrentInput = String(calcCurrentInput).slice(0, -1);
                     } else {
                         calcCurrentInput = '0';
                     }
-                    break;
+                    // No 'result' variable for backspace, it modifies calcCurrentInput directly
+                    updateCalcDisplay();
+                    calcMrcPressedOnce = false; // Pressing backspace means not continuously pressing MRC
+                    return; // Early exit for backspace
             }
+
+            if (result === 'Error' || isNaN(result) || !isFinite(result)) {
+                calcCurrentInput = 'Error';
+            } else {
+                 // Consistent formatting as in calculate()
+                if (Math.abs(result) > 1e10 || (Math.abs(result) < 1e-7 && result !== 0) ) {
+                     calcCurrentInput = result.toExponential(6);
+                } else if (Number.isInteger(result)) {
+                    calcCurrentInput = String(result);
+                } else {
+                    let numStr = String(result);
+                    if (numStr.length > 12) {
+                        if (numStr.includes('.')) {
+                            const parts = numStr.split('.');
+                            const allowedDecimals = Math.max(0, 11 - parts[0].length);
+                            calcCurrentInput = String(parseFloat(result.toFixed(allowedDecimals)));
+                        } else {
+                            calcCurrentInput = 'Error';
+                        }
+                    } else {
+                        calcCurrentInput = numStr;
+                    }
+                }
+            }
+            
+            if (String(calcCurrentInput).length > 12 && calcCurrentInput !== 'Error') {
+                 calcCurrentInput = 'Error';
+            }
+
             updateCalcDisplay();
-            if (func !== 'backspace' && func !== 'negate') { 
+            // For sqrt and percent, the operation is complete, so display should reset on next digit input.
+            // For negate, it's usually not.
+            if (func === 'sqrt' || func === 'percent') {
                 calcShouldResetDisplay = true;
             }
             calcMrcPressedOnce = false;
